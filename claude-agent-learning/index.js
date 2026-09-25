@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getProjectStatus, getProjectOwner } from "./tools/projectTools.js";
+import { executeToolRequests } from "./agent/executeTools.js";
 
 
 // ============================================================
@@ -59,43 +60,7 @@ const toolHandlers = {
 };
 
 
-// ============================================================
-// TOOL EXECUTION
-// Run Claude's requested tools and return the results.
-// ============================================================
 
-function executeToolRequests(toolRequests, toolHandlers) {
-  const toolResults = [];
-
-  for (const toolRequest of toolRequests) {
-    const handler = toolHandlers[toolRequest.name];
-
-    // Return an error to Claude if the tool doesn't exist.
-    if (!handler) {
-      toolResults.push({
-        type: "tool_result",
-        tool_use_id: toolRequest.id,
-        content: `Unknown tool: ${toolRequest.name}`,
-        is_error: true,
-      });
-
-      continue;
-    }
-
-    const result = handler(toolRequest.input);
-
-    toolResults.push({
-      type: "tool_result",
-      tool_use_id: toolRequest.id,
-      content: JSON.stringify(result),
-    });
-
-    console.log("Tool:", toolRequest.name);
-    console.log("Result:", result);
-  }
-
-  return toolResults;
-}
 
 
 // ============================================================
