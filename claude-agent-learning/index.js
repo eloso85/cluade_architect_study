@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { getProjectStatus, getProjectOwner } from "./tools/projectTools.js";
 
 
 // ============================================================
@@ -45,26 +46,6 @@ const tools = [
 ];
 
 
-// ============================================================
-// TOOL FUNCTIONS
-// The actual JavaScript functions our application can execute.
-// ============================================================
-
-function getProjectStatus({ projectId }) {
-  return {
-    id: projectId,
-    status: "Behind Schedule",
-    owner: "Sarah",
-  };
-}
-
-function getProjectOwner({ projectId }) {
-  return {
-    projectId,
-    owner: "Sarah",
-    email: "sarah@example.com",
-  };
-}
 
 
 // ============================================================
