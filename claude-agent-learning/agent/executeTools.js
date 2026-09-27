@@ -1,4 +1,4 @@
-export function executeToolRequests(toolRequests, toolHandlers) {
+export async function executeToolRequests(toolRequests, toolHandlers) {
   const toolResults = [];
 
   for (const toolRequest of toolRequests) {
@@ -15,7 +15,9 @@ export function executeToolRequests(toolRequests, toolHandlers) {
       continue;
     }
 
-    const result = handler(toolRequest.input);
+    try{
+        
+    const result = await handler(toolRequest.input);
 
     toolResults.push({
       type: "tool_result",
@@ -25,6 +27,20 @@ export function executeToolRequests(toolRequests, toolHandlers) {
 
     console.log("Tool:", toolRequest.name);
     console.log("Result:", result);
+
+    }catch (error) {
+        console.log("Tool failed:", toolRequest.name);
+        console.log("Error:", error.message);
+
+        toolResults.push({
+            type: "tool_result",
+            tool_use_id: toolRequest.id,
+            content: `Tool Failed: ${error.message}`,
+            is_error: true,
+        })
+    }
+
+    
   }
 
   return toolResults;

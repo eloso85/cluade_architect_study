@@ -116,7 +116,7 @@ while (true) {
       (block) => block.type === "tool_use",
     );
 
-    const toolResults = executeToolRequests(
+    const toolResults = await executeToolRequests(
       toolRequests,
       toolHandlers,
     );

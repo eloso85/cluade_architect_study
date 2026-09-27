@@ -6,10 +6,11 @@ export function getProjectStatus({ projectId }){
     }
 }
 
-export function getProjectOwner({ projectId}) {
-    return {
-        id: projectId,
-        owner: "Sarah",
-        email: "sarah@example.com"
-    }
+export async function getProjectOwner({ projectId }) {
+  await new Promise((resolve) => setTimeout(resolve, 5000)); // Simulate async operation
+return {
+    projectId,
+    owner: "Sarah",
+    email: "sarah@example.com",
+  };
 }
