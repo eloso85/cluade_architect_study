@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getProjectStatus, getProjectOwner } from "./tools/projectTools.js";
 import { executeToolRequests } from "./agent/executeTools.js";
+import { getUser } from "./tools/userTools.js"; 
 
 
 // ============================================================
@@ -44,6 +45,20 @@ const tools = [
       required: ["projectId"],
     },
   },
+  {
+    name: "get_user",
+    description: "Get user information by user ID",
+    input_schema: {
+        type: "object",
+        properties: {
+            userId: {
+                type: "number",
+                description: "The ID of the user",
+            },
+        },
+        required: ["userId"],
+    }
+  }
 ];
 
 
@@ -57,6 +72,7 @@ const tools = [
 const toolHandlers = {
   get_project_status: getProjectStatus,
   get_project_owner: getProjectOwner,
+  get_user: getUser, 
 };
 
 
@@ -70,7 +86,7 @@ const toolHandlers = {
 const messages = [
   {
     role: "user",
-    content: "What is the status of project 101 and what is the owner's email?",
+    content: "Get user 1 and tell me their name, email, and city."
   },
 ];
 
