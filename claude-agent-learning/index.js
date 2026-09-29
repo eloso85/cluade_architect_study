@@ -86,7 +86,7 @@ const toolHandlers = {
 const messages = [
   {
     role: "user",
-    content: "Get user 1 and tell me their name, email, and city."
+    content: "What is the status of project 101 and what is the owner's email?",
   },
 ];
 

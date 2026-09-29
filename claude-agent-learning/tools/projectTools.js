@@ -1,4 +1,5 @@
-export function getProjectStatus({ projectId }){
+export async function getProjectStatus({ projectId }){
+    await new Promise((resolve)=> setTimeout(resolve, 2000));
     return {
         id: projectId,
         status: "Behind Schedule",
@@ -7,7 +8,7 @@ export function getProjectStatus({ projectId }){
 }
 
 export async function getProjectOwner({ projectId }) {
-  await new Promise((resolve) => setTimeout(resolve, 5000)); // Simulate async operation
+  await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate async operation
 return {
     projectId,
     owner: "Sarah",

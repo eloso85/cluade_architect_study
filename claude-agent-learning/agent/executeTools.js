@@ -1,29 +1,34 @@
 export async function executeToolRequests(toolRequests, toolHandlers) {
-  const toolResults = [];
+  
 
-  for (const toolRequest of toolRequests) {
-    const handler = toolHandlers[toolRequest.name];
+  console.time("Tool Execution");
+
+  const promises = toolRequests.map(async (toolRequest) => {
+     const handler = toolHandlers[toolRequest.name];
 
     if (!handler) {
-      toolResults.push({
+      return {
         type: "tool_result",
         tool_use_id: toolRequest.id,
         content: `Unknown tool: ${toolRequest.name}`,
         is_error: true,
-      });
+      };
 
-      continue;
+      
     }
 
     try{
         
     const result = await handler(toolRequest.input);
 
-    toolResults.push({
+      console.log("Tool:", toolRequest.name);
+      console.log("Results:", result)
+
+    return {
       type: "tool_result",
       tool_use_id: toolRequest.id,
       content: JSON.stringify(result),
-    });
+    };
 
     console.log("Tool:", toolRequest.name);
     console.log("Result:", result);
@@ -32,16 +37,17 @@ export async function executeToolRequests(toolRequests, toolHandlers) {
         console.log("Tool failed:", toolRequest.name);
         console.log("Error:", error.message);
 
-        toolResults.push({
+        return {
             type: "tool_result",
             tool_use_id: toolRequest.id,
             content: `Tool Failed: ${error.message}`,
             is_error: true,
-        })
+        }
     }
+  });
 
-    
-  }
+  const toolResults = await Promise.all(promises);
+  console.timeEnd("Tool Execution");
 
   return toolResults;
 }
