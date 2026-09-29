@@ -1,7 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getProjectStatus, getProjectOwner } from "./tools/projectTools.js";
 import { executeToolRequests } from "./agent/executeTools.js";
-import { getUser } from "./tools/userTools.js"; 
+import { getUser, findUserByName }  from "./tools/userTools.js";
+import { getPostsForUser } from "./tools/postTools.js"; 
 
 
 // ============================================================
@@ -58,7 +59,38 @@ const tools = [
         },
         required: ["userId"],
     }
+  },
+  {
+    name: "find_user_by_name",
+    description: "Find a user by their full name",
+    input_schema: {
+        type: "object",
+        properties: {
+            name: {
+                type: "string",
+                description: "The full name of the user",
+            },
+        },
+        required: ["name"]
+    }
+  },
+  {
+    name: "get_posts_for_user",
+    description: "Get post belonging to a user by their user ID",
+    input_schema: {
+        type: "object",
+        properties: {
+            userId: {
+                type: "number",
+                description: "The ID of the user"
+            },
+        },
+
+        required: ["userId"],
+    }
+
   }
+
 ];
 
 
@@ -73,6 +105,8 @@ const toolHandlers = {
   get_project_status: getProjectStatus,
   get_project_owner: getProjectOwner,
   get_user: getUser, 
+  find_user_by_name: findUserByName,
+  get_posts_for_user: getPostsForUser,
 };
 
 
@@ -86,7 +120,7 @@ const toolHandlers = {
 const messages = [
   {
     role: "user",
-    content: "What is the status of project 101 and what is the owner's email?",
+    content: "Find the user named Leanne Graham and tell me the titles of her posts.",
   },
 ];
 

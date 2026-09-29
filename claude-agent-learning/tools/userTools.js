@@ -16,7 +16,7 @@ export async function getUser({ userId }){
 
 export async function findUserByName({ name }) {
     const response = await fetch(
-        `https://jsonplaceholder.typicode.com/user?name=${encodeURIComponent(name)}`,
+        `https://jsonplaceholder.typicode.com/users?name=${encodeURIComponent(name)}`,
     );
 
     if (!response.ok) {
@@ -27,7 +27,7 @@ export async function findUserByName({ name }) {
 
     const users = await response.json();
 
-    if (user.length === 0){
+    if (users.length === 0){
         throw new Error (` No user found with name: ${name}`)
     }
 

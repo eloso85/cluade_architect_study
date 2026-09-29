@@ -1,4 +1,4 @@
-export async function getPostForUser({ name }) {
+export async function getPostsForUser({ userId }) {
     const response = await fetch(
         `https://jsonplaceholder.typicode.com/posts?userId=${userId}`,
     );
