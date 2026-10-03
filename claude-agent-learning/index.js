@@ -124,7 +124,7 @@ const toolHandlers = {
 const messages = [
   {
     role: "user",
-    content: "Find the user named Leanne Graham and tell me the titles of only 3 of her posts.",
+    content: "Find the user named Leanne Graham and tell me the titles of 500 of her posts.",
   },
 ];
 
@@ -185,4 +185,8 @@ while (true) {
       content: toolResults,
     });
   }
+  if (message.stop_reason === "max_tokens") {
+        console.log("Claude reached the maximum output token limit.")
+        break;
+    }
 }

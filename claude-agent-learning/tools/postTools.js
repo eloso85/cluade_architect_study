@@ -11,8 +11,11 @@ export async function getPostsForUser({ userId, limit = 10 }) {
 
     const posts = await response.json();
 
+    const MAX_POSTS = 10; 
+    const safeLimit = Math.min(limit, MAX_POSTS)
+
     const postSummaries = 
-    posts.slice(0, limit)
+    posts.slice(0, safeLimit)
     .map((post)=>({
         id: post.id,
         title: post.title,
