@@ -1,4 +1,4 @@
-export async function getPostsForUser({ userId }) {
+export async function getPostsForUser({ userId, limit = 10 }) {
     const response = await fetch(
         `https://jsonplaceholder.typicode.com/posts?userId=${userId}`,
     );
@@ -11,6 +11,14 @@ export async function getPostsForUser({ userId }) {
 
     const posts = await response.json();
 
-    return posts;
+    const postSummaries = 
+    posts.slice(0, limit)
+    .map((post)=>({
+        id: post.id,
+        title: post.title,
+        
+    }))
+
+    return postSummaries;
 
 }

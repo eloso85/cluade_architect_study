@@ -26,11 +26,17 @@ export async function findUserByName({ name }) {
     }
 
     const users = await response.json();
-
-    if (users.length === 0){
+     if (users.length === 0){
         throw new Error (` No user found with name: ${name}`)
     }
+    
+   const userSummary = {
+    id: users[0].id,
+    name: users[0].name
+};
 
-    return users[0];
+   
+
+    return userSummary;
 }
 

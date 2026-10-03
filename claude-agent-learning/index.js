@@ -84,6 +84,10 @@ const tools = [
                 type: "number",
                 description: "The ID of the user"
             },
+            limit: {
+                type: "number",
+                description: "Maximum number of posts to return"
+            }
         },
 
         required: ["userId"],
@@ -120,7 +124,7 @@ const toolHandlers = {
 const messages = [
   {
     role: "user",
-    content: "Find the user named Leanne Graham and tell me the titles of her posts.",
+    content: "Find the user named Leanne Graham and tell me the titles of only 3 of her posts.",
   },
 ];
 
