@@ -4,6 +4,9 @@ export async function getPostsForUser({ userId, limit = 10 }) {
     const response = await fetch(
         `https://jsonplaceholder.typicode.com/posts?userId=${userId}&_limit=${safeLimit}`,
     );
+    //console.log("Response headers:", Object.fromEntries(response.headers));
+
+    const totalPosts = Number(response.headers.get("x-total-count"));
 
     if(!response.ok){
         throw new Error(
@@ -23,6 +26,10 @@ export async function getPostsForUser({ userId, limit = 10 }) {
         
     }))
 
-    return postSummaries;
+    return {
+        totalPosts,
+        returnedPosts: postSummaries.length,
+        posts: postSummaries,
+    }
 
 }
