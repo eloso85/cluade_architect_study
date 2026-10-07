@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getProjectStatus, getProjectOwner } from "./tools/projectTools.js";
 import { executeToolRequests } from "./agent/executeTools.js";
 import { getUser, findUserByName }  from "./tools/userTools.js";
-import { getPostsForUser } from "./tools/postTools.js"; 
+import { getPostsForUser, getPostCountForUser } from "./tools/postTools.js"; 
 
 
 // ============================================================
@@ -87,12 +87,30 @@ const tools = [
             limit: {
                 type: "number",
                 description: "Maximum number of posts to return"
+            },
+            page: {
+                type: "number",
+                description: "The page number of the posts to return"
             }
         },
 
         required: ["userId"],
     }
 
+  },
+  {
+    name: "get_post_count_for_user",
+    description: "Get the total number of posts for a user by their user ID",
+      input_schema: {
+        type: "object",
+        properties: {
+            userId: {
+              type: "number",
+              description: "The ID of the user"
+            }
+        },
+        required: ["userId"],
+      }
   }
 
 ];
@@ -111,6 +129,7 @@ const toolHandlers = {
   get_user: getUser, 
   find_user_by_name: findUserByName,
   get_posts_for_user: getPostsForUser,
+  get_post_count_for_user: getPostCountForUser,
 };
 
 
@@ -124,7 +143,7 @@ const toolHandlers = {
 const messages = [
   {
     role: "user",
-    content: "Find the user named Leanne Graham and tell me the titles of 500 of her posts.",
+    content: "Find Leanne Graham and give me page 2 of her posts, with 3 posts per page.",
   },
 ];
 

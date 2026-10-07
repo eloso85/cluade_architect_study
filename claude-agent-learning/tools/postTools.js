@@ -1,12 +1,16 @@
-export async function getPostsForUser({ userId, limit = 10 }) {
-     const MAX_POSTS = 3; 
+export async function getPostsForUser({ 
+    userId, 
+    limit = 10, 
+    page = 1
+}) {
+    
+    const MAX_POSTS = 3; 
     const safeLimit = Math.min(limit, MAX_POSTS)
-    const response = await fetch(
-        `https://jsonplaceholder.typicode.com/posts?userId=${userId}&_limit=${safeLimit}`,
-    );
-    //console.log("Response headers:", Object.fromEntries(response.headers));
+    const offset = (page -1) * safeLimit;
 
-    const totalPosts = Number(response.headers.get("x-total-count"));
+    const response = await fetch(
+        `https://jsonplaceholder.typicode.com/posts?userId=${userId}&_start=${offset}&_limit=${safeLimit}`,
+    );
 
     if(!response.ok){
         throw new Error(
@@ -14,9 +18,9 @@ export async function getPostsForUser({ userId, limit = 10 }) {
         );
     }
 
+    const totalPosts = Number(response.headers.get("x-total-count"));
     const posts = await response.json();
-
-   
+    const totalPages = Math.ceil(totalPosts / safeLimit);
 
     const postSummaries = 
     posts.slice(0, safeLimit)
@@ -29,7 +33,31 @@ export async function getPostsForUser({ userId, limit = 10 }) {
     return {
         totalPosts,
         returnedPosts: postSummaries.length,
+        page,
+        totalPages,
         posts: postSummaries,
+        
     }
+
+}
+
+export async function getPostCountForUser({ userId }) {
+    const response = await fetch(
+        `https://jsonplaceholder.typicode.com/posts?userId=${userId}&_limit=1`,
+    )
+
+    if(!response.ok) {
+        throw new Error(
+            `Failed to get post count for user ${userId}. HTTP status: ${response.status} ${response.statusText}`
+        )
+    }
+
+    const totalPosts = Number(response.headers.get("x-total-count"));
+
+    return {
+        userId: userId,
+        totalPosts: totalPosts,
+    }
+
 
 }
