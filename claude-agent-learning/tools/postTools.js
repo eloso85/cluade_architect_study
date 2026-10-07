@@ -3,7 +3,24 @@ export async function getPostsForUser({
     limit = 10, 
     page = 1
 }) {
+
+    if (
+        limit <= 0
+        || !Number.isInteger(limit)
+        || typeof limit !== "number"
+    ) {
+        throw new Error("Limit must be a positive integer.");
+    }
     
+    if (
+        typeof page !== "number"
+        || !Number.isInteger(page)
+        || page <=0 
+
+    ){
+        throw new Error("Page is not a valid number. It must be a positive integer.");
+    }
+
     const MAX_POSTS = 3; 
     const safeLimit = Math.min(limit, MAX_POSTS)
     const offset = (page -1) * safeLimit;
@@ -61,3 +78,4 @@ export async function getPostCountForUser({ userId }) {
 
 
 }
+
