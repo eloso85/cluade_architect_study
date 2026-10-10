@@ -4,9 +4,11 @@ export async function executeToolRequests(toolRequests, toolHandlers) {
   console.time("Tool Execution");
 
   const promises = toolRequests.map(async (toolRequest) => {
-     const handler = toolHandlers[toolRequest.name];
+     
+     const handlerObject = toolHandlers[toolRequest.name];
+     
 
-    if (!handler) {
+    if (!handlerObject) {
       return {
         type: "tool_result",
         tool_use_id: toolRequest.id,
@@ -17,9 +19,16 @@ export async function executeToolRequests(toolRequests, toolHandlers) {
       
     }
 
+    const {handler, validator} = handlerObject;
+
+   
+
     try{
-        
-    const result = await handler(toolRequest.input);
+      if (validator){
+        validator(toolRequest.input)
+      }
+     
+      const result = await handler(toolRequest.input);
 
       console.log("Tool:", toolRequest.name);
       console.log("Results:", result)
@@ -30,8 +39,7 @@ export async function executeToolRequests(toolRequests, toolHandlers) {
       content: JSON.stringify(result),
     };
 
-    console.log("Tool:", toolRequest.name);
-    console.log("Result:", result);
+    
 
     }catch (error) {
         console.log("Tool failed:", toolRequest.name);

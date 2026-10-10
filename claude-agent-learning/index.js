@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getProjectStatus, getProjectOwner } from "./tools/projectTools.js";
 import { executeToolRequests } from "./agent/executeTools.js";
 import { getUser, findUserByName }  from "./tools/userTools.js";
-import { getPostsForUser, getPostCountForUser } from "./tools/postTools.js"; 
+import { getPostsForUser, getPostCountForUser, validateGetPostsForUserInput } from "./tools/postTools.js"; 
 
 
 // ============================================================
@@ -128,8 +128,11 @@ const toolHandlers = {
   get_project_owner: getProjectOwner,
   get_user: getUser, 
   find_user_by_name: findUserByName,
-  get_posts_for_user: getPostsForUser,
   get_post_count_for_user: getPostCountForUser,
+  get_posts_for_user: {
+    handler: getPostsForUser,
+    validator: validateGetPostsForUserInput
+  }
 };
 
 

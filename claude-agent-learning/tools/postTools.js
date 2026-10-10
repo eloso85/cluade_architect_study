@@ -58,6 +58,28 @@ export async function getPostsForUser({
 
 }
 
+function validatePositiveInteger(value,name){
+    if(
+        typeof value !== "number"
+        || !Number.isInteger(value)
+        || value <= 0
+    ){
+        throw new Error(`${name} is not a postive integer`)
+    }
+}
+
+export function validateGetPostsForUserInput({
+    userId, 
+    limit = 10, 
+    page = 1
+}){
+
+    validatePositiveInteger(userId, "userId");
+    validatePositiveInteger(limit, "limit");
+    validatePositiveInteger(page, "page");
+
+}
+
 export async function getPostCountForUser({ userId }) {
     const response = await fetch(
         `https://jsonplaceholder.typicode.com/posts?userId=${userId}&_limit=1`,
