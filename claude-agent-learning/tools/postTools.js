@@ -64,7 +64,7 @@ function validatePositiveInteger(value,name){
         || !Number.isInteger(value)
         || value <= 0
     ){
-        throw new Error(`${name} is not a postive integer`)
+        throw new Error(`${name} is not a positive integer`)
     }
 }
 

@@ -124,11 +124,21 @@ const tools = [
 // ============================================================
 
 const toolHandlers = {
-  get_project_status: getProjectStatus,
-  get_project_owner: getProjectOwner,
-  get_user: getUser, 
-  find_user_by_name: findUserByName,
-  get_post_count_for_user: getPostCountForUser,
+  get_project_status: {
+    handler: getProjectStatus
+  },
+  get_project_owner: {
+    handler: getProjectOwner
+  },
+  get_user: {
+   handler:getUser
+  }, 
+  find_user_by_name: {
+    handler: findUserByName
+  },
+  get_post_count_for_user: {
+    handler:getPostCountForUser
+  },
   get_posts_for_user: {
     handler: getPostsForUser,
     validator: validateGetPostsForUserInput
@@ -146,7 +156,7 @@ const toolHandlers = {
 const messages = [
   {
     role: "user",
-    content: "Find Leanne Graham and give me page 2 of her posts, with 3 posts per page.",
+    content: "Find Leanne Graham and get page -2 of her posts, with 3 posts per page.",
   },
 ];
 
