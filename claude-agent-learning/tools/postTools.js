@@ -30,9 +30,12 @@ export async function getPostsForUser({
     );
 
     if(!response.ok){
-        throw new Error(
+        const error = new Error(
             ` Failed to get post for user ${userId}. HTTP status: ${response.status} ${response.statusText}`
         );
+
+        error.status = response.status;
+        throw error;
     }
 
     const totalPosts = Number(response.headers.get("x-total-count"));
