@@ -156,7 +156,7 @@ const toolHandlers = {
 const messages = [
   {
     role: "user",
-    content: "Find Leanne Graham and get page -2 of her posts, with 3 posts per page.",
+    content: "Find Leanne Graham and get page 2 of her posts, with 3 posts per page.",
   },
 ];
 

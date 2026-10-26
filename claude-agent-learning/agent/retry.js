@@ -17,6 +17,10 @@ export async function withRetry(operation, maxAttempts = 3) {
                 `Attempt ${attempt} failed: ${error.message}`
             );
 
+            if(!isRetryableError(error)) {
+                throw error
+            }
+
             if (attempt === maxAttempts) {
                 throw error;
             }

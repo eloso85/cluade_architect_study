@@ -1,3 +1,5 @@
+import { withRetry } from "./retry.js";
+
 export async function executeToolRequests(toolRequests, toolHandlers) {
   
 
@@ -28,7 +30,10 @@ export async function executeToolRequests(toolRequests, toolHandlers) {
         validator(toolRequest.input)
       }
      
-      const result = await handler(toolRequest.input);
+      const result = await withRetry(
+        ()=> handler(toolRequest.input)
+      )
+      
 
       console.log("Tool:", toolRequest.name);
       console.log("Results:", result)
