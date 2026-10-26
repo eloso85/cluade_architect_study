@@ -29,31 +29,15 @@ export async function withRetry(operation, maxAttempts = 3) {
                 throw error;
             }
 
-            const delay = 1000 * 2 ** (attempt - 1)
+            const backoff = 1000 * 2 ** (attempt - 1)
+            const jitter = Math.random() * 500;
+            const delay = Math.round(backoff + jitter)
             console.log(`Waiting ${delay}ms before retrying...`)
             await sleep(delay)
         }
     }
 }
 
-let testAttempt = 0;
 
-const fakeOperation = async () => {
-    testAttempt++;
-
-    console.log(`Running operation ${testAttempt}`);
-
-    if (testAttempt < 3) {
-        const error = new Error("Service unavailable");
-        error.status = 503;
-        throw error;
-    }
-
-    return "Success!";
-};
-
-const result = await withRetry(fakeOperation);
-
-console.log("Final result:", result);
 
 

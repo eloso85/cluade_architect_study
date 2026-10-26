@@ -21,7 +21,9 @@ export async function executeToolRequests(toolRequests, toolHandlers) {
       
     }
 
-    const {handler, validator} = handlerObject;
+    const {handler, validator, operationType} = handlerObject;
+
+    console.log(`Exectuion policy for ${toolRequest.name}: ${operationType}`)
 
    
 

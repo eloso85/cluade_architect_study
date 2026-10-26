@@ -141,7 +141,8 @@ const toolHandlers = {
   },
   get_posts_for_user: {
     handler: getPostsForUser,
-    validator: validateGetPostsForUserInput
+    validator: validateGetPostsForUserInput,
+    operationType: "read"
   }
 };
 
