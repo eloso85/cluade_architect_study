@@ -21,10 +21,17 @@ export async function executeToolRequests(toolRequests, toolHandlers) {
       
     }
 
-    const {handler, validator, operationType} = handlerObject;
+    const {
+      handler, 
+      validator, 
+      operationType,
+      idempotent,
+      requiresApproval
+      
+    } = handlerObject;
 
     console.log(`Execution policy for ${toolRequest.name}: ${operationType}`)
-
+    console.log(`Idempotent: ${idempotent}`)
    
 
     try{
@@ -39,10 +46,18 @@ export async function executeToolRequests(toolRequests, toolHandlers) {
         ()=> handler(toolRequest.input)
         )
       } else if(operationType === "write"){
-        result = await handler(toolRequest.input)
+
+        if(idempotent === true){
+          result = await withRetry(
+            ()=> handler(toolRequest.input)
+          )  
+        } else {
+          result = await handler(toolRequest.input)
+        }
+        
       } else {
         throw new Error(
-          `Unkown operation type: ${operationType}`
+          `Unknown operation type: ${operationType}`
         )
       }
       

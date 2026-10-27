@@ -180,7 +180,9 @@ const toolHandlers = {
   create_post:{
     handler: createPost,
     validator: validateCreatePostInput, 
-    operationType: "wirte"
+    operationType: "write",
+    idempotent: false,
+    requiresApproval: true
   }
 };
 
