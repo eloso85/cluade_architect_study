@@ -106,3 +106,58 @@ export async function getPostCountForUser({ userId }) {
 
 }
 
+export async function createPost({
+    userId,
+    title,
+    body
+}) {
+    const response = await fetch(
+        "https://jsonplaceholder.typicode.com/posts",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type" : "application/json"
+            },
+            body: JSON.stringify({
+                userId,
+                title,
+                body
+            })
+        }
+    )
+
+    if(!response.ok){
+        const error = new Error(
+                `Failed to create post. HTTP status: ${response.status} ${response.statusText}`
+            );
+            error.status = response.status
+            throw error
+    }
+
+    const post = await response.json();
+    return post;
+    
+}
+
+export function validateCreatePostInput({
+    userId,
+    title,
+    body
+}) {
+    validatePositiveInteger(userId, "userId");
+
+    if(
+        typeof title !== "string" ||
+        title.trim().length === 0
+    ) {
+        throw new Error("title must be a non-empty string")
+    }
+
+    if (
+        typeof body !== "string" ||
+        body.trim().length === 0 
+    ) {
+        throw new Error("body must be a non-empty string")
+    }
+}
+

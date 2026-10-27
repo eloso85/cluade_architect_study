@@ -23,20 +23,25 @@ export async function executeToolRequests(toolRequests, toolHandlers) {
 
     const {handler, validator, operationType} = handlerObject;
 
-    console.log(`Exectuion policy for ${toolRequest.name}: ${operationType}`)
+    console.log(`Execution policy for ${toolRequest.name}: ${operationType}`)
 
    
 
     try{
+      let result;
+      
       if (validator){
         validator(toolRequest.input)
       }
      
-      const result = await withRetry(
+      if (operationType === "read") {
+         result = await withRetry(
         ()=> handler(toolRequest.input)
       )
+      } else {
+        result = await handler(toolRequest.input)
+      }
       
-
       console.log("Tool:", toolRequest.name);
       console.log("Results:", result)
 
