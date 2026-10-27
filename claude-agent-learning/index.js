@@ -117,6 +117,28 @@ const tools = [
         },
         required: ["userId"],
       }
+  },
+  {
+    name: "create_post",
+    description: "Create a new post for a user",
+      input_schema: {
+        type: "object",
+        properties: {
+          userId: {
+            type: "number",
+            description: "The ID of the user"
+          },
+          title: {
+            type: "string",
+            description: "The title of the post"
+          },
+          body:{
+            type: "string",
+            description: "The body of the post"
+          }
+        },
+        required: ["userId", "title", "body"]
+      }
   }
 
 ];
@@ -154,6 +176,11 @@ const toolHandlers = {
     handler: getPostsForUser,
     validator: validateGetPostsForUserInput,
     operationType: "read"
+  },
+  create_post:{
+    handler: createPost,
+    validator: validateCreatePostInput, 
+    operationType: "wirte"
   }
 };
 
@@ -166,10 +193,11 @@ const toolHandlers = {
 // ============================================================
 
 const messages = [
-  {
-    role: "user",
-    content: "Find Leanne Graham and get page 2 of her posts, with 3 posts per page.",
-  },
+    {
+        role: "user",
+        content:
+            "Create a post for user 1 with the title 'Agent Architecture' and the body 'Learning execution policies.'",
+    },
 ];
 
 

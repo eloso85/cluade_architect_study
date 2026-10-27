@@ -37,9 +37,13 @@ export async function executeToolRequests(toolRequests, toolHandlers) {
       if (operationType === "read") {
          result = await withRetry(
         ()=> handler(toolRequest.input)
-      )
-      } else {
+        )
+      } else if(operationType === "write"){
         result = await handler(toolRequest.input)
+      } else {
+        throw new Error(
+          `Unkown operation type: ${operationType}`
+        )
       }
       
       console.log("Tool:", toolRequest.name);
