@@ -249,6 +249,17 @@ while (true) {
       toolHandlers,
     );
 
+    const pendingApprovals = toolResults.filter(
+      (results) => results.type === "approval_required"
+    );
+
+    if (pendingApprovals.length > 0){
+      console.log("Approval Required");
+      console.dir(pendingApprovals, {depth: null})
+      
+      break
+    }
+
     messages.push({
       role: "assistant",
       content: message.content,

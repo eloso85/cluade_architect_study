@@ -32,6 +32,7 @@ export async function executeToolRequests(toolRequests, toolHandlers) {
 
     console.log(`Execution policy for ${toolRequest.name}: ${operationType}`)
     console.log(`Idempotent: ${idempotent}`)
+    console.log(`Requires approval: ${requiresApproval}`)
    
 
     try{
@@ -39,6 +40,15 @@ export async function executeToolRequests(toolRequests, toolHandlers) {
       
       if (validator){
         validator(toolRequest.input)
+      }
+
+      if (requiresApproval === true) {
+        return {
+          type: "approval_required",
+          tool_use_id: toolRequest.id,
+          tool_name: toolRequest.name,
+          input: toolRequest.input
+        }
       }
      
       if (operationType === "read") {
