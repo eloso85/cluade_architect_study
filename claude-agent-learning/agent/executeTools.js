@@ -1,8 +1,11 @@
 import { withRetry } from "./retry.js";
 
-export async function executeToolRequests(toolRequests, toolHandlers) {
+export async function executeToolRequests(
+  toolRequests, 
+  toolHandlers,
+  approvedRequestIds = new Set()
+) {
   
-
   console.time("Tool Execution");
 
   const promises = toolRequests.map(async (toolRequest) => {

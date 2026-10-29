@@ -10,6 +10,7 @@ import {
   validateCreatePostInput
 } from "./tools/postTools.js"; 
 
+import { createInterface } from "node:readline/promises"
 
 // ============================================================
 // SETUP
@@ -210,6 +211,7 @@ const messages = [
 
 const MAX_ITERATIONS = 10;
 let iteration = 0;
+let pendingApprovalRequests = [];
 
 while (true) {
   iteration++;
@@ -254,6 +256,8 @@ while (true) {
     );
 
     if (pendingApprovals.length > 0){
+      pendingApprovalRequests = pendingApprovals
+
       console.log("Approval Required");
       console.dir(pendingApprovals, {depth: null})
       
@@ -274,4 +278,37 @@ while (true) {
         console.log("Claude reached the maximum output token limit.")
         break;
     }
+}
+
+console.log(
+  "Pending Approval requests:",
+  pendingApprovalRequests.length
+)
+
+if (pendingApprovalRequests.length > 0 ) {
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout
+  })
+
+  const request = pendingApprovalRequests[0];
+  console.log("Tool:" , request.tool_name)
+  console.log("Arguments:" , request.input)
+
+
+  const decisison = await rl.question(
+    "Do you approve the tool request? (yes/no)"
+  );
+  const approved = decisison.trim().toLowerCase() === "yes";
+
+  rl.close();
+
+  if (approved){
+    console.log("Request approved by human.")
+  } else {
+    console.log("Request not approved. No action taken.")
+  }
+  console.log("Human Decision", decisison)
+
+  
 }
