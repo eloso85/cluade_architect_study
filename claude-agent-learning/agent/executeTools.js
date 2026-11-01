@@ -3,7 +3,7 @@ import { withRetry } from "./retry.js";
 export async function executeToolRequests(
   toolRequests, 
   toolHandlers,
-  approvedRequestIds = new Set()
+  approvedRequestIds = new Map()
 ) {
   
   console.time("Tool Execution");
@@ -45,13 +45,29 @@ export async function executeToolRequests(
         validator(toolRequest.input)
       }
 
-      if (requiresApproval === true) {
-        return {
-          type: "approval_required",
-          tool_use_id: toolRequest.id,
-          tool_name: toolRequest.name,
-          input: toolRequest.input
-        }
+      if ( requiresApproval === true) {
+          const approvedRequest = approvedRequestIds.get(toolRequest.id)
+
+          if (!approvedRequest){
+            return {
+            type: "approval_required",
+            tool_use_id: toolRequest.id,
+            tool_name: toolRequest.name,
+            input: toolRequest.input
+          };
+      }
+
+      const sameTool = approvedRequest.name === toolRequest.name;
+
+      const sameInput = 
+        JSON.stringify(approvedRequest.input) ===
+        JSON.stringify(toolRequest.input);
+
+      if(!sameTool || !sameInput) {
+        throw new Error("Approved request does not match tool request");
+      }
+
+      approvedRequestIds.delete(toolRequest.id)  
       }
      
       if (operationType === "read") {

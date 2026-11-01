@@ -1,23 +1,22 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getProjectStatus, getProjectOwner } from "./tools/projectTools.js";
 import { executeToolRequests } from "./agent/executeTools.js";
-import { getUser, findUserByName }  from "./tools/userTools.js";
-import { 
-  getPostsForUser, 
-  getPostCountForUser, 
-  validateGetPostsForUserInput, 
+import { getUser, findUserByName } from "./tools/userTools.js";
+import {
+  getPostsForUser,
+  getPostCountForUser,
+  validateGetPostsForUserInput,
   createPost,
-  validateCreatePostInput
-} from "./tools/postTools.js"; 
+  validateCreatePostInput,
+} from "./tools/postTools.js";
 
-import { createInterface } from "node:readline/promises"
+import { createInterface } from "node:readline/promises";
 
 // ============================================================
 // SETUP
 // ============================================================
 
 const client = new Anthropic();
-
 
 // ============================================================
 // TOOL DEFINITIONS
@@ -57,95 +56,90 @@ const tools = [
     name: "get_user",
     description: "Get user information by user ID",
     input_schema: {
-        type: "object",
-        properties: {
-            userId: {
-                type: "number",
-                description: "The ID of the user",
-            },
+      type: "object",
+      properties: {
+        userId: {
+          type: "number",
+          description: "The ID of the user",
         },
-        required: ["userId"],
-    }
+      },
+      required: ["userId"],
+    },
   },
   {
     name: "find_user_by_name",
     description: "Find a user by their full name",
     input_schema: {
-        type: "object",
-        properties: {
-            name: {
-                type: "string",
-                description: "The full name of the user",
-            },
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+          description: "The full name of the user",
         },
-        required: ["name"]
-    }
+      },
+      required: ["name"],
+    },
   },
   {
     name: "get_posts_for_user",
     description: "Get post belonging to a user by their user ID",
     input_schema: {
-        type: "object",
-        properties: {
-            userId: {
-                type: "number",
-                description: "The ID of the user"
-            },
-            limit: {
-                type: "number",
-                description: "Maximum number of posts to return"
-            },
-            page: {
-                type: "number",
-                description: "The page number of the posts to return"
-            }
+      type: "object",
+      properties: {
+        userId: {
+          type: "number",
+          description: "The ID of the user",
         },
+        limit: {
+          type: "number",
+          description: "Maximum number of posts to return",
+        },
+        page: {
+          type: "number",
+          description: "The page number of the posts to return",
+        },
+      },
 
-        required: ["userId"],
-    }
-
+      required: ["userId"],
+    },
   },
   {
     name: "get_post_count_for_user",
     description: "Get the total number of posts for a user by their user ID",
-      input_schema: {
-        type: "object",
-        properties: {
-            userId: {
-              type: "number",
-              description: "The ID of the user"
-            }
+    input_schema: {
+      type: "object",
+      properties: {
+        userId: {
+          type: "number",
+          description: "The ID of the user",
         },
-        required: ["userId"],
-      }
+      },
+      required: ["userId"],
+    },
   },
   {
     name: "create_post",
     description: "Create a new post for a user",
-      input_schema: {
-        type: "object",
-        properties: {
-          userId: {
-            type: "number",
-            description: "The ID of the user"
-          },
-          title: {
-            type: "string",
-            description: "The title of the post"
-          },
-          body:{
-            type: "string",
-            description: "The body of the post"
-          }
+    input_schema: {
+      type: "object",
+      properties: {
+        userId: {
+          type: "number",
+          description: "The ID of the user",
         },
-        required: ["userId", "title", "body"]
-      }
-  }
-
+        title: {
+          type: "string",
+          description: "The title of the post",
+        },
+        body: {
+          type: "string",
+          description: "The body of the post",
+        },
+      },
+      required: ["userId", "title", "body"],
+    },
+  },
 ];
-
-
-
 
 // ============================================================
 // TOOL REGISTRY
@@ -155,54 +149,49 @@ const tools = [
 const toolHandlers = {
   get_project_status: {
     handler: getProjectStatus,
-    operationType: "read"
+    operationType: "read",
   },
   get_project_owner: {
     handler: getProjectOwner,
-    operationType: "read"
+    operationType: "read",
   },
   get_user: {
-   handler:getUser,
-    operationType: "read"
-  }, 
+    handler: getUser,
+    operationType: "read",
+  },
   find_user_by_name: {
     handler: findUserByName,
-    operationType: "read"
+    operationType: "read",
   },
   get_post_count_for_user: {
-    handler:getPostCountForUser,
-    operationType: "read"
+    handler: getPostCountForUser,
+    operationType: "read",
   },
   get_posts_for_user: {
     handler: getPostsForUser,
     validator: validateGetPostsForUserInput,
-    operationType: "read"
+    operationType: "read",
   },
-  create_post:{
+  create_post: {
     handler: createPost,
-    validator: validateCreatePostInput, 
+    validator: validateCreatePostInput,
     operationType: "write",
     idempotent: false,
-    requiresApproval: true
-  }
+    requiresApproval: true,
+  },
 };
-
-
-
-
 
 // ============================================================
 // CONVERSATION
 // ============================================================
 
 const messages = [
-    {
-        role: "user",
-        content:
-            "Create a post for user 1 with the title 'Agent Architecture' and the body 'Learning execution policies.'",
-    },
+  {
+    role: "user",
+    content:
+      "Create a post for user 1 with the title 'Agent Architecture' and the body 'Learning execution policies.'",
+  },
 ];
-
 
 // ============================================================
 // AGENT LOOP
@@ -212,6 +201,8 @@ const messages = [
 const MAX_ITERATIONS = 10;
 let iteration = 0;
 let pendingApprovalRequests = [];
+let pendingAssistantContent = null;
+
 
 while (true) {
   iteration++;
@@ -246,22 +237,21 @@ while (true) {
       (block) => block.type === "tool_use",
     );
 
-    const toolResults = await executeToolRequests(
-      toolRequests,
-      toolHandlers,
-    );
+    const toolResults = await executeToolRequests(toolRequests, toolHandlers);
 
     const pendingApprovals = toolResults.filter(
-      (results) => results.type === "approval_required"
+      (results) => results.type === "approval_required",
     );
 
-    if (pendingApprovals.length > 0){
-      pendingApprovalRequests = pendingApprovals
+    if (pendingApprovals.length > 0) {
+      pendingApprovalRequests = pendingApprovals;
+
+      pendingAssistantContent = message.content;
 
       console.log("Approval Required");
-      console.dir(pendingApprovals, {depth: null})
-      
-      break
+      console.dir(pendingApprovals, { depth: null });
+
+      break;
     }
 
     messages.push({
@@ -275,40 +265,76 @@ while (true) {
     });
   }
   if (message.stop_reason === "max_tokens") {
-        console.log("Claude reached the maximum output token limit.")
-        break;
-    }
+    console.log("Claude reached the maximum output token limit.");
+    break;
+  }
 }
 
-console.log(
-  "Pending Approval requests:",
-  pendingApprovalRequests.length
-)
+console.log("Pending Approval requests:", pendingApprovalRequests.length);
 
-if (pendingApprovalRequests.length > 0 ) {
+if (pendingApprovalRequests.length > 0) {
   const rl = createInterface({
     input: process.stdin,
-    output: process.stdout
-  })
+    output: process.stdout,
+  });
 
   const request = pendingApprovalRequests[0];
-  console.log("Tool:" , request.tool_name)
-  console.log("Arguments:" , request.input)
 
+  console.log("Tool:", request.tool_name);
+  console.log("Arguments:", request.input);
 
   const decisison = await rl.question(
-    "Do you approve the tool request? (yes/no)"
+    "Do you approve the tool request? (yes/no)",
   );
   const approved = decisison.trim().toLowerCase() === "yes";
 
   rl.close();
 
-  if (approved){
-    console.log("Request approved by human.")
-  } else {
-    console.log("Request not approved. No action taken.")
-  }
-  console.log("Human Decision", decisison)
+  if (approved) {
+    console.log("Request approved by human.");
 
-  
+    const approvedRequestIds = new Map([
+      [
+        request.tool_use_id,
+        {
+          name: request.tool_name,
+          input: structuredClone(request.input),
+        },
+      ],
+    ]);
+
+    console.log("Approved request IDs:", approvedRequestIds);
+
+    const approvedToolRequest = {
+      id: request.tool_use_id,
+      name: request.tool_name,
+      input: request.input,
+    };
+
+    const approvedToolResults = await executeToolRequests(
+      [approvedToolRequest],
+      toolHandlers,
+      approvedRequestIds
+    )
+
+    console.log("Approved tool results:", approvedToolResults)
+    console.log("Remaining approvals:", approvedRequestIds);
+
+    messages.push({
+      role: "assistant",
+      content: pendingAssistantContent
+    });
+
+    messages.push({
+      role: "user",
+      content: pendingAssistantContent
+    });
+
+    console.log("Conversation updated with approved tool results")
+
+    console.log("Approved tool request:", approvedToolRequest);
+  } else {
+    console.log("Request not approved. No action taken.");
+  }
+  console.log("Human Decision", decisison);
 }
