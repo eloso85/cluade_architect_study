@@ -237,6 +237,12 @@ while (true) {
       (block) => block.type === "tool_use",
     );
 
+    if (toolRequests.length !== 1){
+      throw new Error(
+        "This approval workflow currently supports exactly one tool request."
+      )
+    }
+
     const toolResults = await executeToolRequests(toolRequests, toolHandlers);
 
     const pendingApprovals = toolResults.filter(
@@ -319,7 +325,7 @@ if (pendingApprovalRequests.length > 0) {
 
     console.log("Approved tool results:", approvedToolResults)
     console.log("Remaining approvals:", approvedRequestIds);
-
+    
     messages.push({
       role: "assistant",
       content: pendingAssistantContent
@@ -327,14 +333,51 @@ if (pendingApprovalRequests.length > 0) {
 
     messages.push({
       role: "user",
-      content: pendingAssistantContent
+      content: approvedToolResults
     });
 
     console.log("Conversation updated with approved tool results")
 
+   
+
     console.log("Approved tool request:", approvedToolRequest);
   } else {
     console.log("Request not approved. No action taken.");
+
+    const rejectedToolResult ={
+      type: "tool_result",
+      tool_use_id: request.tool_use_id,
+      content: "Human rejected the request.",
+      is_error: true
+    }
+    
+    messages.push({
+      role: "assistant",
+      content: pendingAssistantContent
+    });
+
+    messages.push({
+      role:"user",
+      content: [rejectedToolResult]
+    })
+
   }
+
+  const finalResponse = await client.messages.create({
+    model: "claude-sonnet-4-5",
+    max_tokens: 200, 
+    tools,
+    tool_choice: { type: "none"},
+    messages
+  });
+
+  console.log("Final stop reason:", finalResponse.stop_reason);
+
+  for (const  block of finalResponse.content){
+    if (block.type === "text"){
+      console.log("Claude:", block.text)
+    }
+  }
+
   console.log("Human Decision", decisison);
 }
