@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getProjectStatus, getProjectOwner } from "./tools/projectTools.js";
 import { executeToolRequests } from "./agent/executeTools.js";
 import { getUser, findUserByName } from "./tools/userTools.js";
+import { getReadyTasks } from "./agent/scheduler.js";
 import {
   getPostsForUser,
   getPostCountForUser,
@@ -237,13 +238,23 @@ while (true) {
       (block) => block.type === "tool_use",
     );
 
+    const scheduledTasks = toolRequests.map(toolRequest => ({
+      ...toolRequest,
+      dependencies: []
+    }));
+
+    const readyTasks = getReadyTasks(
+      scheduledTasks,
+      new Set()
+    );
+
     if (toolRequests.length !== 1){
       throw new Error(
         "This approval workflow currently supports exactly one tool request."
       )
     }
 
-    const toolResults = await executeToolRequests(toolRequests, toolHandlers);
+    const toolResults = await executeToolRequests(readyTasks, toolHandlers);
 
     const pendingApprovals = toolResults.filter(
       (results) => results.type === "approval_required",
