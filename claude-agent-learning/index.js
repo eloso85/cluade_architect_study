@@ -190,7 +190,7 @@ const messages = [
   {
     role: "user",
     content:
-      "Create a post for user 1 with the title 'Agent Architecture' and the body 'Learning execution policies.'",
+      "Find the user named Leanne Graham, retrieve their posts, and tell me how many posts they have.",
   },
 ];
 
@@ -248,11 +248,17 @@ while (true) {
       new Set()
     );
 
-    if (toolRequests.length !== 1){
+    const constainsApprovalRequiredTool = toolRequests.some(
+      toolRequest => 
+        toolHandlers[toolRequest.name]?.requiresApproval === true
+    )
+
+    if ( constainsApprovalRequiredTool && toolRequests.length !== 1){
       throw new Error(
         "This approval workflow currently supports exactly one tool request."
       )
     }
+
 
     const toolResults = await executeToolRequests(readyTasks, toolHandlers);
 
