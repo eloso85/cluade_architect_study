@@ -1,0 +1,12 @@
+Project: Nova
+Status: At Risk
+Owner: Emily Chen
+
+Project Nova is a mobile employee scheduling application.
+
+The project is at risk because the third-party notification
+service has experienced intermittent outages.
+
+The team is evaluating a backup notification provider.
+
+A decision is expected before the next development sprint.

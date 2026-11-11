@@ -1,0 +1,14 @@
+Project: Atlas
+Status: Behind Schedule
+Owner: Sarah Mitchell
+
+Project Atlas is a customer management platform.
+
+The project is behind schedule because the authentication API
+integration took longer than expected.
+
+Additional delays occurred because the development team discovered
+inconsistent customer records during database migration.
+
+The team expects to recover two weeks by completing authentication
+testing and prioritizing database cleanup.
