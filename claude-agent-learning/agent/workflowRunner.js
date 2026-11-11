@@ -23,11 +23,28 @@ export async function runWorkflow(workflow, toolHandlers){
             readyTask.map(task=> task.id)
         )
 
-        const toolRequests = readyTask.map(task => ({
+        const toolRequests = readyTask.map(task => {
+            let input = task.input;
+            
+            if (task.dependencies.includes("A")){
+                const user = taskResults.get("A");
+
+                if (!user || user.id == null){
+                    throw new Error("Task A did not return a vaild user ID")
+                }
+
+                input = {
+                    ...task.input,
+                    userId: user.id
+                };
+            }
+            
+            return {
             id: task.id,
             name: task.name,
-            input: task.input
-        }));
+            input
+            }
+        });
 
         const toolResults = await executeToolRequests(
             toolRequests,
@@ -58,7 +75,7 @@ export async function runWorkflow(workflow, toolHandlers){
         }
 
 
-        break;
+        
     }
 
     console.log("Completed Tasks:", completedTasks);
